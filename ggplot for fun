@@ -1,0 +1,308 @@
+#import data set 
+m5 <- read.csv("M5.csv", header = TRUE,
+               col.names = c("Student", "Verbal Score", "Math Score"))
+
+# import libraries 
+#library(psych)
+#library(pastecs)
+#library(Hmisc)
+#library(ggplot2)
+
+
+#p1
+stat.desc(m5$Verbal.Score)
+stat.desc(m5$Math.Score)
+cor(m5$Math.Score,m5$Verbal.Score)
+
+#Scatter Plot 
+sp <- ggplot(m5, aes(Math.Score,Verbal.Score))
+sp + geom_point(aes(color = Student), shape = 21,
+                fill = "white", size = 1, stroke =2) + 
+  theme_light() + 
+  xlim (250,800) +
+  ylim (250,800) + 
+  labs(x = "Math Scores",
+       y = "Verbal Scores",
+       title = "Verbal and Math Scores",
+caption = "Fig.1 - The scatter plot displays the sample size of 527 students test scores in verbal and math from college R.
+                     The math test scores are plotted along the x-axis, and verbal test scores along the y-axis. 
+                      The regression line represents the intercept of our constant value that does not change") +
+  geom_abline(aes(slope = 0.56418, intercept = 176.05425))
+
+spm <- ggplot(m5, aes(Verbal.Score,Math.Score))
+spm + geom_point(aes(color = Student), shape = 21,
+                fill = "white", size = 1, stroke =2) + 
+  theme_light() + 
+  xlim (250,800) +
+  ylim (250,800) + 
+  labs(x = "Verbal Scores",
+       y = "Math Scores",
+       title = "Math and Verbal Scores") +
+  geom_abline(aes(slope = 0.53947, intercept = 318.94035))
+
+#coeficient of determination
+summary(lm(m5$Verbal ~ m5$Math, data = m5))
+summary(lm(m5$Math ~ m5$Verbal, data = m5))
+
+mod <-lm(m5$Verbal.Score ~ m5$Math.Score, data = m5)
+par(mfrow =c(2,2))
+plot(mod)
+confint(mod, level = 0.95)
+#p2
+
+#import data set 
+m5.1 <- read.csv("m5.1.csv", header = TRUE, 
+                 col.names = c("Year", "Consumption", "Investment"))
+
+# import libraries 
+#library(psych)
+#library(pastecs)
+#library(Hmisc)
+#library(ggplot2)
+
+#p1.2
+stat.desc(m5.1$Consumption)
+stat.desc(m5.1$Investment)
+cor(m5.1$Investment, m5.1$Consumption)
+cor(m5.1$Consumption, m5.1$Investment)
+
+#Scatter Plot 1.2
+sp1 <- ggplot(m5.1, aes(Investment,Consumption))
+sp1 + geom_point(aes(color = Year), shape = 21,
+                 fill = "white", size = 1, stroke =2) + 
+  theme_light() + 
+  labs(xlab = "Investment Shares",
+       ylab= "Consumption Shares",
+       title = "Consumption and Investment Shares for County Z, From 1950 to 1992",
+  caption = "Fig.2 - The scatter plot displays the  the values of Consumption and Investment Shares for county Z, from 1950 to 1992.
+                     The consumption test scores are plotted along the x-axis, and investment test scores along the y-axis. 
+                      The regression line represents the intercept of our constant value that does not change") +
+  stat_smooth() + 
+  geom_abline(slope = -1.1028, intercept = 84.7987)
+
+#coeficient of determination
+summary(lm(m5.1$Consumption ~ m5.1$Investment, data = m5.1))
+summary(lm(m5.1$Investment ~ m5.1$Consumption, data = m5.1))
+
+#p3
+
+#import the data set
+m5.2 <- read.csv("m5.2.csv", header = TRUE,
+                 col.names = c("City ID", "Death", "Predicted Deaths ", "Doctor", "Hospital", "Income", "Population"))
+
+#import libraries 
+#library(psych)
+#library(pastecs)
+#library(Hmisc)
+#library(ggplot2)
+
+#p1.3
+ml <- lm(m5.2$Death ~ m5.2$Doctor + 
+           m5.2$Hospital + 
+           m5.2$Income + 
+           m5.2$Population, data = m5.2)
+par(mfrow = c(2,2))
+plot(ml)
+
+mlp1 <- lm(mlp ~ m5.2$Doctor + 
+           m5.2$Hospital + 
+           m5.2$Income + 
+           m5.2$Population, data = m5.2)
+
+summary(ml)
+mlp <-(fitted(ml))
+diff <- m5.2$Death - mlp
+diff
+diagnostics <- data.frame(influence(ml))  
+residuals <- residuals(ml)
+
+summary(mlp1)
+mlp1.1 <- ggplot(data = m5.2, aes(Death,mlp))
+mlp1.1 + geom_point() + 
+  theme_bw() +
+  labs(title = "Y1 and Predicted Y1") +
+  geom_density2d() + 
+  geom_abline()
+
+#correlation coeficient
+cor(m5.2$Death,mlp)
+
+#scatter plot 1.3
+
+sp3 <- ggplot(m5.2, aes(Doctor,Death))
+A <- sp3 + geom_point(aes(color = Death), shape = 21,
+                 fill = "white", size = 1, stroke =2) + 
+  theme_light() + 
+  labs(title = "Death Rate and Doctor Availability", 
+       caption = "The data above shows Health statistics for 53 small cities in the United States. 
+       The scatter plot contains data for death rate per 1000 residents and doctor availability per 100,000 residents") +
+  geom_smooth() +
+  geom_abline(slope = 0.0073916, intercept = 12.2662557)
+
+sp4 <- ggplot(m5.2, aes(Hospital,Death))
+B <- sp4 + geom_point(aes(color = Death), shape = 21,
+                      fill = "white", size = 1, stroke =2) + 
+  theme_light() + 
+  labs(title = "Death Rate and Hospital Availability",
+       caption = "The data above shows Health statistics for 53 small cities in the United States. 
+       The scatter plot contains data for death rate per 1000 residents and hospital availability per 100,000 residents") +
+  geom_density2d() +
+  geom_abline(slope = 0.0005837, intercept = 12.2662557)
+
+sp5 <- ggplot(m5.2, aes(Income,Death))
+C <- sp5 + geom_point(aes(color = Death), shape = 21,
+                      fill = "white" , size = 1, stroke =2) + 
+  theme_light() + 
+  labs(title = "Death Rate and Annual Income",
+       caption = "The data above shows Health statistics for 53 small cities in the United States. 
+       The scatter plot contains data for death rate per 1000 residents and annual per capita income in thousands of dollars") +
+  geom_density2d() +
+  geom_abline(slope = -0.3302303, intercept = 12.2662557) 
+
+sp6 <- ggplot(m5.2, aes(Population,Death))
+D <- sp6 + geom_point(aes(color = Death), shape = 21,
+                      fill = "white", size = 1, stroke =2) + 
+  theme_light() + 
+  labs(title = "Death Rate and Population Density",
+       caption = "The data above shows Health statistics for 53 small cities in the United States. 
+       The scatter plot contains data for death rate per 1000 residents and population density people per square mile") +
+  geom_smooth() +
+  geom_abline(slope = -0.0094629, intercept = 12.2662557)
+
+Fig1 <- ggarrange(A,B,C,D,
+                  labels = c("A","B","C","D"),
+                  ncol = 2, nrow = 2) 
+
+Fig1
+
+#p1.4
+#import the data set
+m5.3 <- read.csv("m5.3.csv", header = TRUE,
+                 col.names = c("City ID", "Overall Reported Crimes", "Reported Violent Crimes", "Police Funding", "25 years + w/4 yrs. HS",
+                               "16 to 19", "18 to 24", "25 years + w/4 yeras of college"))
+
+#import libraries 
+#library(psych)
+#library(pastecs)
+#library(Hmisc)
+#library(ggplot2)
+
+#y1
+ml1 <- lm(m5.3$Overall.Reported.Crimes ~ m5.3$Police.Funding + 
+           m5.3$X25.years...w.4.yrs..HS + 
+           m5.3$X16.to.19 + 
+           m5.3$X18.to.24 +
+          m5.3$X25.years...w.4.yeras.of.college, data = m5.3)
+
+plot(ml1)
+
+sp11 <- ggplot(m5.3, aes(Police.Funding, Overall.Reported.Crimes))
+k <- sp11 + geom_point(aes(color = City.ID), shape = 21,
+                  size = 2, stroke = 2) +
+  theme_classic() + 
+  labs(title = "Reported Crimes and Police Funding",
+       caption = "The data above shows Crime statistics for 50 small cities in the United States.
+       The scatter plot contains two variables Police Funding (x-axis), and Overall reported crimes (y-axis)") +
+  geom_abline(slope = 10.981, intercept = 489.649)
+
+summary(ml1)
+mlp <- data.frame(fitted(ml1))
+diff <- m5.3$Overall.Reported.Crimes - mlp
+diagnostics <- data.frame(influence(ml1))  
+residuals <- residuals(ml1)
+
+
+#y2
+ml2 <- lm(m5.3$Reported.Violent.Crimes ~ m5.3$Police.Funding + 
+            m5.3$X25.years...w.4.yrs..HS + 
+            m5.3$X16.to.19 + 
+            m5.3$X18.to.24 +
+            m5.3$X25.years...w.4.yeras.of.college, data = m5.3)
+
+sp51 <- ggplot(m5.3, aes(Police.Funding, Reported.Violent.Crimes))
+n <- sp51 + geom_point(aes(color = City.ID), shape = 21,
+                       size = 2, stroke = 2) +
+  theme_classic() + 
+  xlim(0,150) + 
+  ylim(0,2000) +
+  labs(title = "Reported Crimes and Police Funding",
+       caption = "The data above shows Crime statistics for 50 small cities in the United States.
+       The scatter plot contains two variables Police Funding (x-axis), and Overall reported crimes (y-axis)") +
+  geom_abline(intercept = 1171.268, slope = 21.010)
+n
+summary(ml2)
+mlp1 <- data.frame(fitted(ml2))
+diff1 <- m5.3$Reported.Violent.Crimes - mlp
+diagnostics1 <- data.frame(influence(ml2))  
+residuals1 <- residuals(ml2)   
+
+fig111 <- ggarrange(k,n,
+          ncol = 2, nrow = 1,
+          labels = c("A","B"))
+fig111
+
+#p1.5
+#import the data set
+m5.4 <- read.csv("m5.4.csv", header = TRUE,
+                 col.names = c("Weight", "Systolic Blood Pressure", "Age in Years", "Weight in Pounds"))
+
+#import libraries 
+#library(psych)
+#library(pastecs)
+#library(Hmisc)
+#library(ggplot2)
+
+#y1
+ml3 <- lm(m5.4$Systolic.Blood.Pressure ~ m5.4$Age.in.Years + 
+            m5.4$Weight.in.Pounds,  
+          data = m5.4)
+
+sp8 <- ggplot(m5.4, aes(Age.in.Years,Systolic.Blood.Pressure))
+A1 <- sp8 + geom_point(aes(color = Weight), shape = 21,
+                 fill = "red", size = 2, stroke = 2) + 
+  theme_classic2() +
+    labs(title = "Systolic Blood Pressure and Age in Yrs", 
+         caption = "Fig. 4 The data above shows the systolic blood pressure and ages  of 11 patients from hispital K.") +
+  geom_smooth() + 
+  geom_abline(slope = 0.8614, intercept = 30.9941)
+
+sp9 <- ggplot(m5.4, aes(Weight.in.Pounds,Systolic.Blood.Pressure))
+B1 <- sp9 + geom_point(aes(color = Weight), shape = 21,
+                 fill = "purple", size = 2, stroke = 2) + 
+  theme_classic2() +
+  labs(title = "Systolic Blood Pressure and Weight in Lbs",
+       caption = "Fig. 5 The data below shows the systolic blood pressure and weights of 11 patients from hispital K.") +
+  geom_smooth() + 
+  geom_abline(slope = 0.3349, intercept = 30.9941)
+
+ggarrange(A1,B1,
+          ncol = 2, nrow = 1,
+          labels = c("A","B"))
+cor(m5.4$Age.in.Years,m5.4$Weight.in.Pounds)
+
+summary(ml3)
+mlp2 <- data.frame(fitted(ml3))
+diff2 <- m5.4$Systolic.Blood.Pressure - mlp3
+diagnostics2 <- data.frame(influence(ml3))  
+residuals <- residuals(ml3)   
+
+ 
+par(fig=c(0,0.8,0,0.8), new=TRUE)
+plot(m5.4$Age.in.Years, m5.4$Systolic.Blood.Pressure, xlab="Age In Years",
+     ylab="Systolic Blood Pressure", b)
+par(fig=c(0,0.8,0.55,1), new=TRUE)
+boxplot(m5.4$Age.in.Years, horizontal=TRUE, axes=FALSE)
+par(fig=c(0.65,1,0,0.8),new=TRUE)
+boxplot(m5.4$Systolic.Blood.Pressure, axes=FALSE)
+mtext("Blood Pressue and Age", side=3, outer=TRUE, line=-3) 
+dev.off()
+
+
+par(fig=c(0,0.8,0,0.8), new=TRUE)
+plot(m5.4$Weight.in.Pounds, m5.4$Systolic.Blood.Pressure, xlab="Weight in Pounds",
+     ylab="Systolic Blood Pressure")
+par(fig=c(0,0.8,0.55,1), new=TRUE)
+boxplot(m5.4$Weight.in.Pounds, horizontal=TRUE, axes=FALSE)
+par(fig=c(0.65,1,0,0.8),new=TRUE)
+boxplot(m5.4$Systolic.Blood.Pressure, axes=FALSE)
+mtext("Blood Pressure and Weight", side=3, outer=TRUE, line=-3) 
