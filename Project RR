@@ -1,0 +1,31 @@
+## import libraries ----
+library('shiny')
+library('ggplot2')
+
+## Gather data -----
+setwd("~/Fun") #setting the directory (Non-specific)
+Housing <- read.csv('House.csv', header=TRUE) #Importing the dataset 
+str(Housing) #Structure of the data
+names(Housing)
+attach(Housing)
+
+## Check for missing  ----
+is.na(Housing) # Displays missing values per column
+sum(is.na(Housing)) # how many missing values are present in the dataset
+mean(is.na(Housing)) #percentage make-up of missing values 6%
+
+## Removing Missing Values 
+omit.na()
+
+##Visualize the data ----
+a <- ggplot(Housing, aes(YearBuilt,SalePrice))
+a + geom_point()
+
+w <- ggplot(Housing, aes(YrSold,SalePrice))
+w + geom_jitter()
+
+q <- ggplot(Housing, aes(YearBuilt))
+q + geom_histogram(bins=60)
+
+a <- ggplot(Housing, aes(YearBuilt,SalePrice))
+a + geom_point()
